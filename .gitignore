@@ -9,7 +9,8 @@
 # CRITICAL: Never commit API keys or credentials
 .env
 .env.*
-!.env.example          # Allow the example template only
+# Allow the example template only
+!.env.example
 *.env
 secrets.json
 secrets.yaml
