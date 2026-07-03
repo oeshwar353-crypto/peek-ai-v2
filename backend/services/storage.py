@@ -3,7 +3,7 @@ import json
 import uuid
 from typing import List, Dict, Any, Optional
 
-from backend.config import settings
+from config import settings
 
 PROJECTS_FILE = os.path.join(settings.DATA_DIR, "projects.json")
 

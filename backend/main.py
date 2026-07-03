@@ -7,15 +7,15 @@ from fastapi.staticfiles import StaticFiles
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 
-from backend.config import settings
-from backend.services.storage import StorageService
-from backend.services.vision import VisionService
-from backend.services.generator import GeneratorService
-from backend.services.improver import ImproverService
-from backend.services.coach import CoachService
-from backend.services.planner import PlannerService
-from backend.services.feedback import FeedbackService
-from backend.services.inspiration import InspirationService
+from config import settings
+from services.storage import StorageService
+from services.vision import VisionService
+from services.generator import GeneratorService
+from services.improver import ImproverService
+from services.coach import CoachService
+from services.planner import PlannerService
+from services.feedback import FeedbackService
+from services.inspiration import InspirationService
 
 app = FastAPI(
     title="Peek AI",
