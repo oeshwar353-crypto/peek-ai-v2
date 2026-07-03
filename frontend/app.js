@@ -3,7 +3,7 @@
 //  Clean, modular, production-grade JavaScript
 // ================================================================
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://peek-ai-v2.onrender.com";
 
 // ── STATE ────────────────────────────────────────────────────────
 const state = {
