@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peek AI — Your AI Creator Workspace</title>
+  <meta name="description" content="Peek AI is your intelligent creator workspace. Analyze, generate, improve and coach your content using the power of AI.">
+
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Ambient background blobs -->
+  <div class="ambient-layer" aria-hidden="true">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+  </div>
+
+  <!-- ============================================================
+       ROOT LAYOUT
+  ============================================================ -->
+  <div class="shell" id="appShell">
+
+    <!-- ─── SIDEBAR ─────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+            <path d="M12 1C12 1 4 5 4 12s8 11 8 11 8-4 8-11S12 1 12 1Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M1 12h4M19 12h4M12 1v4M12 19v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="logo-name">Peek AI</span>
+      </div>
+
+      <!-- Workspace selector -->
+      <div class="sidebar-section">
+        <p class="sidebar-label">Workspace</p>
+        <button class="workspace-btn" id="projectSelectorBtn">
+          <i data-lucide="folder" class="icon-sm"></i>
+          <span id="activeProjectName">Select Project</span>
+          <i data-lucide="chevron-down" class="icon-xs ml-auto"></i>
+        </button>
+
+        <div class="workspace-dropdown hidden" id="projectsDropdown">
+          <div class="dropdown-header">
+            <span>Projects</span>
+            <button class="icon-btn" id="newProjectBtn" title="New project">
+              <i data-lucide="plus" class="icon-xs"></i>
+            </button>
+          </div>
+          <div class="dropdown-list" id="projectsList"></div>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <nav class="sidebar-nav" id="sidebarNav">
+        <p class="sidebar-label">Navigate</p>
+
+        <a href="#" class="nav-link active" data-pane="pane-home">
+          <i data-lucide="layout-dashboard" class="icon-sm"></i>
+          <span>Home</span>
+          <div class="nav-indicator"></div>
+        </a>
+        <a href="#" class="nav-link" data-pane="pane-analyze">
+          <i data-lucide="scan-eye" class="icon-sm"></i>
+          <span>Analyze</span>
+          <div class="nav-indicator"></div>
+        </a>
+        <a href="#" class="nav-link" data-pane="pane-create">
+          <i data-lucide="wand-sparkles" class="icon-sm"></i>
+          <span>Create</span>
+          <div class="nav-indicator"></div>
+        </a>
+        <a href="#" class="nav-link" data-pane="pane-coach">
+          <i data-lucide="message-circle" class="icon-sm"></i>
+          <span>Coach</span>
+          <div class="nav-indicator"></div>
+        </a>
+        <a href="#" class="nav-link" data-pane="pane-plan">
+          <i data-lucide="calendar-range" class="icon-sm"></i>
+          <span>Plan</span>
+          <div class="nav-indicator"></div>
+        </a>
+        <a href="#" class="nav-link" data-pane="pane-inspire">
+          <i data-lucide="lightbulb" class="icon-sm"></i>
+          <span>Inspire</span>
+          <div class="nav-indicator"></div>
+        </a>
+      </nav>
+
+      <!-- Sidebar stats -->
+      <div class="sidebar-stats" id="sidebarStats">
+        <div class="stat-chip" id="scriptsStatChip" style="cursor: pointer;">
+          <i data-lucide="file-text" class="icon-xs"></i>
+          <span id="statScriptsCount">0</span>
+          <span class="stat-label">Scripts</span>
+        </div>
+        <div class="stat-chip">
+          <i data-lucide="bar-chart-2" class="icon-xs"></i>
+          <span id="statAnalysisScore">—</span>
+          <span class="stat-label">Score</span>
+        </div>
+      </div>
+
+      <!-- Sidebar footer -->
+      <div class="sidebar-footer">
+        <div class="status-dot-row">
+          <div class="status-dot online"></div>
+          <span>System Active</span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ─── MAIN CONTENT ─────────────────────────────────────── -->
+    <main class="main-content" id="mainContent">
+
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="breadcrumb">
+          <span class="crumb-root">Peek AI</span>
+          <i data-lucide="chevron-right" class="icon-xs crumb-sep"></i>
+          <span class="crumb-active" id="breadcrumbLabel">Home</span>
+        </div>
+        <div class="topbar-right">
+          <div class="project-pill" id="headerProjectPill">
+            <i data-lucide="folder-open" class="icon-xs"></i>
+            <span id="headerProjectName">No Project Selected</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Pane Container -->
+      <div class="pane-container">
+
+        <!-- ══════ PANE: HOME ══════ -->
+        <section class="pane active" id="pane-home">
+
+          <!-- Hero Banner -->
+          <div class="home-hero-new">
+            <div class="home-hero-glow" aria-hidden="true"></div>
+            <div class="home-hero-badge">
+              <span class="hero-dot"></span>
+              <span>AI System Online</span>
+            </div>
+            <p class="home-greeting" id="homeGreeting">Good morning</p>
+            <h1 class="home-headline-new">Your <span class="gradient-text">AI Creator</span><br>Workspace Is Ready</h1>
+            <p class="home-sub-new">Analyze posts, generate scripts, plan content calendars, get personalized coaching — powered by Groq LLM, all in one place.</p>
+            <div class="home-hero-cta-row">
+              <button class="btn btn-primary home-cta-btn" data-pane="pane-analyze">
+                <i data-lucide="zap" class="icon-sm"></i>
+                Start Analyzing
+              </button>
+              <button class="btn btn-ghost home-cta-btn" data-pane="pane-create">
+                <i data-lucide="wand-sparkles" class="icon-sm"></i>
+                Create Content
+              </button>
+            </div>
+          </div>
+
+          <!-- Features Grid -->
+          <div class="home-section-label">
+            <i data-lucide="grid-2x2" class="icon-xs"></i>
+            <span>Everything You Need</span>
+          </div>
+          <div class="home-features-grid">
+
+            <button class="feature-card feature-blue" data-pane="pane-analyze">
+              <div class="feature-card-glow"></div>
+              <div class="feature-icon-wrap fc-blue">
+                <i data-lucide="scan-eye"></i>
+              </div>
+              <div class="feature-card-body">
+                <h3>Visual Analysis</h3>
+                <p>Upload any post screenshot and receive a full AI strategy report — hook score, virality, CTAs, and actionable improvements.</p>
+              </div>
+              <div class="feature-tags">
+                <span class="ftag">Hook Score</span>
+                <span class="ftag">Virality</span>
+                <span class="ftag">CTA Analysis</span>
+              </div>
+              <div class="feature-card-arrow">
+                <i data-lucide="arrow-up-right" class="icon-xs"></i>
+              </div>
+            </button>
+
+            <button class="feature-card feature-purple" data-pane="pane-analyze">
+              <div class="feature-card-glow"></div>
+              <div class="feature-icon-wrap fc-purple">
+                <i data-lucide="image"></i>
+              </div>
+              <div class="feature-card-body">
+                <h3>Thumbnail CTR</h3>
+                <p>Analyze YouTube thumbnails for click-through rate potential — synergy, colors, emotion, and text readability rated instantly.</p>
+              </div>
+              <div class="feature-tags">
+                <span class="ftag">CTR Prediction</span>
+                <span class="ftag">Color Impact</span>
+                <span class="ftag">Emotion</span>
+              </div>
+              <div class="feature-card-arrow">
+                <i data-lucide="arrow-up-right" class="icon-xs"></i>
+              </div>
+            </button>
+
+            <button class="feature-card feature-green" data-pane="pane-create">
+              <div class="feature-card-glow"></div>
+              <div class="feature-icon-wrap fc-green">
+                <i data-lucide="wand-sparkles"></i>
+              </div>
+              <div class="feature-card-body">
+                <h3>Content Generator</h3>
+                <p>Generate Reel scripts, captions, hooks, and CTAs tailored to your platform, tone, and audience in seconds.</p>
+              </div>
+              <div class="feature-tags">
+                <span class="ftag">Reel Scripts</span>
+                <span class="ftag">Hooks</span>
+                <span class="ftag">Captions</span>
+              </div>
+              <div class="feature-card-arrow">
+                <i data-lucide="arrow-up-right" class="icon-xs"></i>
+              </div>
+            </button>
+
+            <button class="feature-card feature-amber" data-pane="pane-create">
+              <div class="feature-card-glow"></div>
+              <div class="feature-icon-wrap fc-amber">
+                <i data-lucide="sparkles"></i>
+              </div>
+              <div class="feature-card-body">
+                <h3>AI Optimizer</h3>
+                <p>Paste your draft hook, caption, or script — get instant AI feedback with a grade, strengths, weaknesses, and a full rewrite in 6 styles.</p>
+              </div>
+              <div class="feature-tags">
+                <span class="ftag">Feedback</span>
+                <span class="ftag">Rewrite</span>
+                <span class="ftag">6 Styles</span>
+              </div>
+              <div class="feature-card-arrow">
+                <i data-lucide="arrow-up-right" class="icon-xs"></i>
+              </div>
+            </button>
+
+            <button class="feature-card feature-teal" data-pane="pane-plan">
+              <div class="feature-card-glow"></div>
+              <div class="feature-icon-wrap fc-teal">
+                <i data-lucide="calendar-range"></i>
+              </div>
+              <div class="feature-card-body">
+                <h3>Content Planner</h3>
+                <p>Generate a structured posting calendar for 7, 30, or 90 days. Build a phase-by-phase growth strategy for your niche.</p>
+              </div>
+              <div class="feature-tags">
+                <span class="ftag">Calendar</span>
+                <span class="ftag">Strategy</span>
+                <span class="ftag">Growth Roadmap</span>
+              </div>
+              <div class="feature-card-arrow">
+                <i data-lucide="arrow-up-right" class="icon-xs"></i>
+              </div>
+            </button>
+
+            <button class="feature-card feature-pink" data-pane="pane-inspire">
+              <div class="feature-card-glow"></div>
+              <div class="feature-icon-wrap fc-pink">
+                <i data-lucide="lightbulb"></i>
+              </div>
+              <div class="feature-card-body">
+                <h3>Inspiration Engine</h3>
+                <p>Generate 10+ content ideas with hooks and formats instantly. Break down any viral post to decode exactly what made it work.</p>
+              </div>
+              <div class="feature-tags">
+                <span class="ftag">Idea Generator</span>
+                <span class="ftag">Viral Breakdown</span>
+              </div>
+              <div class="feature-card-arrow">
+                <i data-lucide="arrow-up-right" class="icon-xs"></i>
+              </div>
+            </button>
+
+            <button class="feature-card feature-indigo" data-pane="pane-coach">
+              <div class="feature-card-glow"></div>
+              <div class="feature-icon-wrap fc-indigo">
+                <i data-lucide="message-circle"></i>
+              </div>
+              <div class="feature-card-body">
+                <h3>Coach Maverick</h3>
+                <p>Chat with your AI creator coach for strategy advice, algorithm insights, and personalized growth recommendations — 24/7.</p>
+              </div>
+              <div class="feature-tags">
+                <span class="ftag">AI Coach</span>
+                <span class="ftag">Strategy</span>
+                <span class="ftag">Growth Tips</span>
+              </div>
+              <div class="feature-card-arrow">
+                <i data-lucide="arrow-up-right" class="icon-xs"></i>
+              </div>
+            </button>
+
+            <!-- Workspace Brief mini card -->
+            <div class="feature-card feature-notes home-notes-card">
+              <div class="feature-card-glow"></div>
+              <div class="feature-icon-wrap fc-notes">
+                <i data-lucide="notebook-pen"></i>
+              </div>
+              <div class="feature-card-body home-notes-body">
+                <h3>Workspace Brief</h3>
+                <textarea id="projectNotes" class="home-notes-textarea" placeholder="Brand voice, audience notes, content pillars..."></textarea>
+                <button class="btn btn-sm btn-ghost home-notes-save" id="saveNotesBtn">
+                  <i data-lucide="save" class="icon-xs"></i>
+                  Save Brief
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Workflow Strip -->
+          <div class="home-section-label" style="margin-top:28px">
+            <i data-lucide="git-branch" class="icon-xs"></i>
+            <span>Connected Workflow</span>
+          </div>
+          <div class="home-workflow">
+            <div class="workflow-step">
+              <div class="ws-num">01</div>
+              <div class="ws-icon wsi-blue"><i data-lucide="scan-eye"></i></div>
+              <div class="ws-text">
+                <strong>Analyze</strong>
+                <span>Upload &amp; decode content</span>
+              </div>
+            </div>
+            <div class="workflow-arrow"><i data-lucide="chevron-right"></i></div>
+            <div class="workflow-step">
+              <div class="ws-num">02</div>
+              <div class="ws-icon wsi-purple"><i data-lucide="wand-sparkles"></i></div>
+              <div class="ws-text">
+                <strong>Create</strong>
+                <span>Generate optimized assets</span>
+              </div>
+            </div>
+            <div class="workflow-arrow"><i data-lucide="chevron-right"></i></div>
+            <div class="workflow-step">
+              <div class="ws-num">03</div>
+              <div class="ws-icon wsi-teal"><i data-lucide="calendar-range"></i></div>
+              <div class="ws-text">
+                <strong>Plan</strong>
+                <span>Build your content calendar</span>
+              </div>
+            </div>
+            <div class="workflow-arrow"><i data-lucide="chevron-right"></i></div>
+            <div class="workflow-step">
+              <div class="ws-num">04</div>
+              <div class="ws-icon wsi-pink"><i data-lucide="lightbulb"></i></div>
+              <div class="ws-text">
+                <strong>Inspire</strong>
+                <span>Discover viral ideas</span>
+              </div>
+            </div>
+            <div class="workflow-arrow"><i data-lucide="chevron-right"></i></div>
+            <div class="workflow-step">
+              <div class="ws-num">05</div>
+              <div class="ws-icon wsi-green"><i data-lucide="message-circle"></i></div>
+              <div class="ws-text">
+                <strong>Coach</strong>
+                <span>Get expert guidance</span>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ══════ PANE: ANALYZE ══════ -->
+        <section class="pane" id="pane-analyze">
+          <div class="pane-header">
+            <h2>Visual Analysis</h2>
+            <p>Upload a post screenshot or thumbnail for an AI-powered strategy report.</p>
+          </div>
+
+          <div class="studio-tabs">
+            <button class="studio-tab active" id="tabAnalyzePost">
+              <i data-lucide="scan-eye" class="icon-xs"></i>
+              Post Analyzer
+            </button>
+            <button class="studio-tab" id="tabAnalyzeThumbnail">
+              <i data-lucide="image" class="icon-xs"></i>
+              Thumbnail CTR
+            </button>
+          </div>
+
+          <div class="analyze-layout">
+
+            <!-- Left: Upload + preview -->
+            <div class="analyze-left">
+              <div class="upload-card" id="uploadZoneWrapper">
+                <!-- Empty state upload -->
+                <div class="upload-zone" id="uploadZone">
+                  <div class="upload-icon-wrap">
+                    <i data-lucide="image-up" class="upload-icon"></i>
+                  </div>
+                  <p class="upload-title">Drop your screenshot here</p>
+                  <p class="upload-sub">or <span class="upload-link">browse files</span></p>
+                  <p class="upload-hint">PNG, JPG, WEBP up to 10MB</p>
+                  <input type="file" id="screenshotInput" accept="image/*" hidden>
+                </div>
+
+                <!-- Preview state -->
+                <div class="upload-preview hidden" id="previewContainer">
+                  <img id="screenshotPreview" src="" alt="Uploaded screenshot preview">
+                  <div class="preview-overlay">
+                    <button class="preview-remove-btn" id="removeUploadBtn">
+                      <i data-lucide="trash-2" class="icon-xs"></i>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-full" id="startAnalysisBtn" disabled>
+                <i data-lucide="zap" class="icon-sm"></i>
+                Run Analysis
+              </button>
+
+              <!-- AI pipeline steps (hidden until running) -->
+              <div class="ai-pipeline hidden" id="aiPipeline">
+                <div class="pipeline-step" id="pStep1">
+                  <div class="step-dot"></div>
+                  <span>Reading Layout</span>
+                </div>
+                <div class="pipeline-step" id="pStep2">
+                  <div class="step-dot"></div>
+                  <span>Extracting Text</span>
+                </div>
+                <div class="pipeline-step" id="pStep3">
+                  <div class="step-dot"></div>
+                  <span>Evaluating Hook</span>
+                </div>
+                <div class="pipeline-step" id="pStep4">
+                  <div class="step-dot"></div>
+                  <span>Assembling Report</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Results -->
+            <div class="analyze-right">
+
+              <!-- Empty state -->
+              <div class="analysis-empty" id="analysisResultPlaceholder">
+                <i data-lucide="file-search" class="empty-icon"></i>
+                <h4>No analysis yet</h4>
+                <p>Upload a screenshot and run analysis to see your content strategy report here.</p>
+              </div>
+
+              <!-- Results -->
+              <div class="analysis-results hidden" id="analysisResultContent">
+
+                <!-- Score ring + health -->
+                <div class="results-hero">
+                  <div class="score-ring-wrap">
+                    <svg class="score-ring" viewBox="0 0 120 120">
+                      <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                      <circle class="ring-fill" cx="60" cy="60" r="50" id="radialProgressCircle"/>
+                    </svg>
+                    <div class="score-ring-text">
+                      <span class="score-big" id="overallScoreVal">0</span>
+                      <span class="score-label">/ 100</span>
+                    </div>
+                  </div>
+
+                  <div class="results-meta">
+                    <div class="badge-row">
+                      <span class="badge" id="healthBadge">Healthy</span>
+                    </div>
+                    <div class="virality-block">
+                      <div class="virality-header">
+                        <span>Virality Index</span>
+                        <strong id="viralityScoreVal">0</strong><span>%</span>
+                      </div>
+                      <div class="progress-track">
+                        <div class="progress-fill" id="viralityBarFill"></div>
+                      </div>
+                    </div>
+                    <div class="bridge-btns">
+                      <button class="btn btn-sm btn-ghost" id="bridgeToGeneratorBtn">
+                        <i data-lucide="wand-sparkles" class="icon-xs"></i>
+                        Generate from this
+                      </button>
+                      <button class="btn btn-sm btn-ghost" id="bridgeToCoachBtn">
+                        <i data-lucide="message-circle" class="icon-xs"></i>
+                        Ask Coach
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Detail cards grid -->
+                <div class="detail-grid">
+                  <div class="detail-card">
+                    <div class="detail-card-head">
+                      <i data-lucide="anchor" class="icon-xs text-accent"></i>
+                      <span>Hook & Title</span>
+                      <span class="detail-score" id="hookScoreVal">—</span>
+                    </div>
+                    <p id="hookDesc" class="detail-text"></p>
+                    <p id="hookCritique" class="detail-critique"></p>
+                  </div>
+
+                  <div class="detail-card">
+                    <div class="detail-card-head">
+                      <i data-lucide="layers" class="icon-xs text-accent"></i>
+                      <span>Storytelling</span>
+                    </div>
+                    <div class="detail-tags">
+                      <span class="tag-item">Pacing: <strong id="storyPacing">—</strong></span>
+                      <span class="tag-item">Structure: <strong id="storyStructure">—</strong></span>
+                    </div>
+                  </div>
+
+                  <div class="detail-card">
+                    <div class="detail-card-head">
+                      <i data-lucide="palette" class="icon-xs text-accent"></i>
+                      <span>Visual Design</span>
+                    </div>
+                    <div class="detail-tags">
+                      <span class="tag-item">Hierarchy: <strong id="designHierarchy">—</strong></span>
+                      <span class="tag-item">Colors: <strong id="designColors">—</strong></span>
+                    </div>
+                  </div>
+
+                  <div class="detail-card">
+                    <div class="detail-card-head">
+                      <i data-lucide="mouse-pointer-click" class="icon-xs text-accent"></i>
+                      <span>CTA Efficacy</span>
+                    </div>
+                    <p id="ctaEfficiency" class="detail-text"></p>
+                    <div class="alt-box">
+                      <span class="alt-label">Try instead:</span>
+                      <span id="ctaAlternative"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Observations -->
+                <div class="observations-block">
+                  <h4 class="obs-title">
+                    <i data-lucide="list-checks" class="icon-xs"></i>
+                    Key Observations
+                  </h4>
+                  <div class="obs-cols">
+                    <div class="obs-col">
+                      <p class="obs-col-label strengths-label">
+                        <i data-lucide="check-circle" class="icon-xs"></i> Strengths
+                      </p>
+                      <ul id="strengthsList" class="obs-list"></ul>
+                    </div>
+                    <div class="obs-col">
+                      <p class="obs-col-label weaknesses-label">
+                        <i data-lucide="alert-circle" class="icon-xs"></i> Weaknesses
+                      </p>
+                      <ul id="weaknessesList" class="obs-list"></ul>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Thumbnail Analyzer Panel -->
+          <div class="studio-panel" id="panelThumbnail">
+            <div class="analyze-layout">
+              <div class="analyze-left">
+                <div class="upload-card" id="thumbUploadWrapper">
+                  <div class="upload-zone" id="thumbUploadZone">
+                    <div class="upload-icon-wrap">
+                      <i data-lucide="image-up" class="upload-icon"></i>
+                    </div>
+                    <p class="upload-title">Drop your thumbnail here</p>
+                    <p class="upload-sub">or <span class="upload-link">browse files</span></p>
+                    <p class="upload-hint">PNG, JPG, WEBP up to 10MB</p>
+                    <input type="file" id="thumbFileInput" accept="image/*" hidden>
+                  </div>
+                  <div class="upload-preview hidden" id="thumbPreviewContainer">
+                    <img id="thumbPreview" src="" alt="Thumbnail preview">
+                    <div class="preview-overlay">
+                      <button class="preview-remove-btn" id="thumbRemoveBtn">
+                        <i data-lucide="trash-2" class="icon-xs"></i>
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-full" id="analyzeThumbnailBtn" disabled>
+                  <i data-lucide="zap" class="icon-sm"></i>
+                  Analyze CTR Potential
+                </button>
+              </div>
+              <div class="analyze-right">
+                <div class="analysis-empty" id="thumbResultEmpty">
+                  <i data-lucide="image-plus" class="empty-icon"></i>
+                  <h4>No thumbnail analyzed yet</h4>
+                  <p>Upload a YouTube thumbnail to get CTR optimization feedback.</p>
+                </div>
+                <div class="analysis-results hidden" id="thumbResultContent">
+                  <div class="results-hero">
+                    <div class="score-ring-wrap">
+                      <svg class="score-ring" viewBox="0 0 120 120">
+                        <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                        <circle class="ring-fill" cx="60" cy="60" r="50" id="thumbProgressCircle"/>
+                      </svg>
+                      <div class="score-ring-text">
+                        <span class="score-big" id="thumbCtrScoreVal">0</span>
+                        <span class="score-label">CTR</span>
+                      </div>
+                    </div>
+                    <div class="results-meta">
+                      <div class="badge-row">
+                        <span class="badge" id="thumbGradeBadge">—</span>
+                      </div>
+                      <p id="thumbOverview" class="detail-text" style="margin-top:10px"></p>
+                    </div>
+                  </div>
+                  <div class="detail-grid">
+                    <div class="detail-card">
+                      <div class="detail-card-head">
+                        <i data-lucide="type" class="icon-xs text-accent"></i>
+                        <span>Title Synergy</span>
+                      </div>
+                      <p id="thumbTitleSynergy" class="detail-text"></p>
+                    </div>
+                    <div class="detail-card">
+                      <div class="detail-card-head">
+                        <i data-lucide="palette" class="icon-xs text-accent"></i>
+                        <span>Color Impact</span>
+                      </div>
+                      <p id="thumbColorImpact" class="detail-text"></p>
+                    </div>
+                    <div class="detail-card">
+                      <div class="detail-card-head">
+                        <i data-lucide="smile" class="icon-xs text-accent"></i>
+                        <span>Emotion &amp; Faces</span>
+                      </div>
+                      <p id="thumbEmotion" class="detail-text"></p>
+                    </div>
+                    <div class="detail-card">
+                      <div class="detail-card-head">
+                        <i data-lucide="type" class="icon-xs text-accent"></i>
+                        <span>Text Readability</span>
+                      </div>
+                      <p id="thumbReadability" class="detail-text"></p>
+                    </div>
+                  </div>
+                  <div class="observations-block">
+                    <h4 class="obs-title">
+                      <i data-lucide="list-checks" class="icon-xs"></i>
+                      Optimization Suggestions
+                    </h4>
+                    <ul id="thumbSuggestions" class="obs-list" style="padding-left:8px"></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ══════ PANE: CREATE ══════ -->
+        <section class="pane" id="pane-create">
+          <div class="pane-header">
+            <h2>Creator Studio</h2>
+            <p>Generate scripts, hooks, captions and CTAs — or optimize a draft you already have.</p>
+          </div>
+
+          <div class="studio-tabs">
+            <button class="studio-tab active" id="tabGenerate">
+              <i data-lucide="sparkles" class="icon-xs"></i>
+              Generate
+            </button>
+            <button class="studio-tab" id="tabImprove">
+              <i data-lucide="pencil-ruler" class="icon-xs"></i>
+              Optimize
+            </button>
+            <button class="studio-tab" id="tabFeedback">
+              <i data-lucide="message-square" class="icon-xs"></i>
+              Feedback
+            </button>
+            <button class="studio-tab" id="tabRewrite">
+              <i data-lucide="refresh-cw" class="icon-xs"></i>
+              Rewrite
+            </button>
+          </div>
+
+          <div class="studio-layout">
+
+            <!-- Left: Inputs -->
+            <div class="studio-inputs">
+
+              <!-- Generate panel -->
+              <div class="studio-panel active" id="panelGenerate">
+                <div class="asset-type-grid">
+                  <div class="asset-card active" data-value="Reel Script">
+                    <i data-lucide="video" class="icon-sm"></i>
+                    <span>Reel Script</span>
+                  </div>
+                  <div class="asset-card" data-value="Caption">
+                    <i data-lucide="align-left" class="icon-sm"></i>
+                    <span>Caption</span>
+                  </div>
+                  <div class="asset-card" data-value="Hooks">
+                    <i data-lucide="anchor" class="icon-sm"></i>
+                    <span>5 Hooks</span>
+                  </div>
+                  <div class="asset-card" data-value="CTA">
+                    <i data-lucide="megaphone" class="icon-sm"></i>
+                    <span>CTA Variant</span>
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label class="field-label" for="genPlatform">Platform</label>
+                    <select id="genPlatform" class="field-select">
+                      <option value="Instagram">Instagram</option>
+                      <option value="YouTube">YouTube</option>
+                      <option value="TikTok">TikTok</option>
+                      <option value="LinkedIn">LinkedIn</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="genTone">Tone</label>
+                    <select id="genTone" class="field-select">
+                      <option value="Confident & Bold">Bold</option>
+                      <option value="Educational & Informative">Informative</option>
+                      <option value="Conversational & Friendly">Friendly</option>
+                      <option value="Hype & Energetic">Energetic</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label" for="genTopic">Topic or Focus Area</label>
+                  <textarea id="genTopic" class="field-textarea" placeholder="Describe the topic you want to create content for..."></textarea>
+                </div>
+
+                <button class="btn btn-primary btn-full" id="generateAssetBtn">
+                  <i data-lucide="zap" class="icon-sm"></i>
+                  Build Content Asset
+                </button>
+              </div>
+
+              <!-- Improve panel -->
+              <div class="studio-panel" id="panelImprove">
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label class="field-label" for="improveType">Content Type</label>
+                    <select id="improveType" class="field-select">
+                      <option value="Hook">Hook (First 3 seconds)</option>
+                      <option value="Caption">Caption Text</option>
+                      <option value="Call to Action (CTA)">Call to Action</option>
+                      <option value="Video Script / Voiceover">Script / Voiceover</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="improveFocus">Target Metric</label>
+                    <select id="improveFocus" class="field-select">
+                      <option value="Maximize watch time & retention">Retention</option>
+                      <option value="Increase emotional triggers">Emotional Impact</option>
+                      <option value="Clarity and punchiness">Clarity</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label class="field-label" for="improveRawContent">Your Draft</label>
+                  <textarea id="improveRawContent" class="field-textarea" placeholder="Paste your hook, caption, or script draft to optimize..."></textarea>
+                </div>
+
+                <button class="btn btn-primary btn-full" id="improveBtn">
+                  <i data-lucide="sparkles" class="icon-sm"></i>
+                  Optimize Draft
+                </button>
+              </div>
+
+              <!-- Feedback panel -->
+              <div class="studio-panel" id="panelFeedback">
+                <div class="field-group">
+                  <label class="field-label" for="feedbackPlatform">Platform</label>
+                  <select id="feedbackPlatform" class="field-select">
+                    <option value="Instagram">Instagram</option>
+                    <option value="YouTube">YouTube</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="general">General</option>
+                  </select>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="feedbackContent">Your Content</label>
+                  <textarea id="feedbackContent" class="field-textarea" placeholder="Paste your caption, script, or hook here to get expert AI feedback..."></textarea>
+                </div>
+                <button class="btn btn-primary btn-full" id="getFeedbackBtn">
+                  <i data-lucide="zap" class="icon-sm"></i>
+                  Get AI Feedback
+                </button>
+              </div>
+
+              <!-- Rewrite panel -->
+              <div class="studio-panel" id="panelRewrite">
+                <div class="field-group">
+                  <label class="field-label" for="rewriteStyle">Rewrite Style</label>
+                  <select id="rewriteStyle" class="field-select">
+                    <option value="viral">Viral &amp; Shareable</option>
+                    <option value="professional">Professional</option>
+                    <option value="emotional">Emotional &amp; Story-driven</option>
+                    <option value="storytelling">Narrative Storytelling</option>
+                    <option value="persuasive">Persuasive &amp; CTA-heavy</option>
+                    <option value="simple">Simple &amp; Direct</option>
+                  </select>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="rewritePlatform">Platform</label>
+                  <select id="rewritePlatform" class="field-select">
+                    <option value="Instagram">Instagram</option>
+                    <option value="YouTube">YouTube</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="general">General</option>
+                  </select>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="rewriteContent">Original Content</label>
+                  <textarea id="rewriteContent" class="field-textarea" placeholder="Paste your content to rewrite in a new style..."></textarea>
+                </div>
+                <button class="btn btn-primary btn-full" id="rewriteBtn">
+                  <i data-lucide="refresh-cw" class="icon-sm"></i>
+                  Rewrite Content
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Right: Output -->
+            <div class="studio-output">
+
+              <div class="output-empty" id="studioOutputEmpty">
+                <i data-lucide="file-output" class="empty-icon"></i>
+                <h4>Output will appear here</h4>
+                <p>Fill in the form and click generate to see your AI-crafted content.</p>
+              </div>
+
+              <div class="output-card hidden" id="studioOutputContainer">
+                <div class="output-card-header">
+                  <span class="output-title" id="studioOutputTitle">Generated Asset</span>
+                  <div class="output-actions">
+                    <button class="btn btn-sm btn-ghost" id="copyStudioOutputBtn">
+                      <i data-lucide="copy" class="icon-xs"></i>
+                      Copy
+                    </button>
+                    <button class="btn btn-sm btn-primary" id="saveStudioOutputBtn">
+                      <i data-lucide="bookmark" class="icon-xs"></i>
+                      Save to Project
+                    </button>
+                  </div>
+                </div>
+                <textarea class="output-textarea" id="studioOutputPreviewText"></textarea>
+                <div class="output-rationale">
+                  <i data-lucide="info" class="icon-xs text-muted"></i>
+                  <p id="studioOutputRationale"></p>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ══════ PANE: PLAN ══════ -->
+        <section class="pane" id="pane-plan">
+          <div class="pane-header">
+            <h2>Content Planner</h2>
+            <p>Build a data-driven content strategy or generate a full posting calendar.</p>
+          </div>
+
+          <div class="studio-tabs">
+            <button class="studio-tab active" id="tabCalendar">
+              <i data-lucide="calendar" class="icon-xs"></i>
+              Content Calendar
+            </button>
+            <button class="studio-tab" id="tabStrategy">
+              <i data-lucide="target" class="icon-xs"></i>
+              Strategy Builder
+            </button>
+          </div>
+
+          <div class="studio-layout">
+            <!-- Content Calendar Panel -->
+            <div class="studio-panel active" id="panelCalendar">
+              <div class="studio-inputs">
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label class="field-label" for="calPlatform">Platform</label>
+                    <select id="calPlatform" class="field-select">
+                      <option value="Instagram">Instagram</option>
+                      <option value="YouTube">YouTube</option>
+                      <option value="TikTok">TikTok</option>
+                      <option value="LinkedIn">LinkedIn</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="calDays">Duration</label>
+                    <select id="calDays" class="field-select">
+                      <option value="7">7 Days</option>
+                      <option value="30">30 Days</option>
+                      <option value="90">90 Days</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label class="field-label" for="calNiche">Niche</label>
+                    <input id="calNiche" class="field-input" placeholder="e.g. Fitness, Finance, Tech...">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="calAudience">Target Audience</label>
+                    <input id="calAudience" class="field-input" placeholder="e.g. Young professionals...">
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="calBrief">Content Brief (optional)</label>
+                  <textarea id="calBrief" class="field-textarea" style="min-height:80px" placeholder="Paste your brand notes or pull from Workspace Brief..."></textarea>
+                </div>
+                <button class="btn btn-primary btn-full" id="generateCalendarBtn">
+                  <i data-lucide="calendar-range" class="icon-sm"></i>
+                  Generate Calendar
+                </button>
+              </div>
+              <div class="studio-output" id="calendarOutput">
+                <div class="output-empty" id="calendarEmpty">
+                  <i data-lucide="calendar" class="empty-icon"></i>
+                  <h4>Your calendar will appear here</h4>
+                  <p>Fill in your niche and platform to generate a structured posting plan.</p>
+                </div>
+                <div class="hidden" id="calendarResult">
+                  <div class="output-card">
+                    <div class="output-card-header">
+                      <span class="output-title" id="calendarResultTitle">Content Calendar</span>
+                      <div class="output-actions">
+                        <button class="btn btn-sm btn-ghost" id="copyCalendarBtn">
+                          <i data-lucide="copy" class="icon-xs"></i> Copy
+                        </button>
+                      </div>
+                    </div>
+                    <div id="calendarGrid" class="calendar-grid"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Strategy Builder Panel -->
+            <div class="studio-panel" id="panelStrategy">
+              <div class="studio-inputs">
+                <div class="field-group">
+                  <label class="field-label" for="stratGoal">Primary Goal</label>
+                  <select id="stratGoal" class="field-select">
+                    <option value="Grow followers fast">Grow followers fast</option>
+                    <option value="Monetize content">Monetize content</option>
+                    <option value="Build brand authority">Build brand authority</option>
+                    <option value="Drive leads and sales">Drive leads and sales</option>
+                    <option value="Go viral consistently">Go viral consistently</option>
+                  </select>
+                </div>
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label class="field-label" for="stratPlatform">Platform</label>
+                    <select id="stratPlatform" class="field-select">
+                      <option value="Instagram">Instagram</option>
+                      <option value="YouTube">YouTube</option>
+                      <option value="TikTok">TikTok</option>
+                      <option value="LinkedIn">LinkedIn</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="stratTimeframe">Timeframe</label>
+                    <select id="stratTimeframe" class="field-select">
+                      <option value="30">30 Days</option>
+                      <option value="60">60 Days</option>
+                      <option value="90">90 Days</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label class="field-label" for="stratNiche">Niche</label>
+                    <input id="stratNiche" class="field-input" placeholder="e.g. Personal Finance">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="stratAudience">Audience</label>
+                    <input id="stratAudience" class="field-input" placeholder="e.g. Millennials, 25-35">
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-full" id="generateStrategyBtn">
+                  <i data-lucide="target" class="icon-sm"></i>
+                  Build My Strategy
+                </button>
+              </div>
+              <div class="studio-output" id="strategyOutput">
+                <div class="output-empty" id="strategyEmpty">
+                  <i data-lucide="target" class="empty-icon"></i>
+                  <h4>Strategy will appear here</h4>
+                  <p>Define your goal and platform to get a custom growth roadmap.</p>
+                </div>
+                <div class="hidden" id="strategyResult">
+                  <div class="output-card">
+                    <div class="output-card-header">
+                      <span class="output-title">Growth Strategy</span>
+                      <button class="btn btn-sm btn-ghost" id="copyStrategyBtn">
+                        <i data-lucide="copy" class="icon-xs"></i> Copy
+                      </button>
+                    </div>
+                    <div id="strategyContent" class="strategy-body"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════ PANE: INSPIRE ══════ -->
+        <section class="pane" id="pane-inspire">
+          <div class="pane-header">
+            <h2>Inspiration Engine</h2>
+            <p>Break down viral content formulas or generate a fresh wave of content ideas.</p>
+          </div>
+
+          <div class="studio-tabs">
+            <button class="studio-tab active" id="tabIdeas">
+              <i data-lucide="lightbulb" class="icon-xs"></i>
+              Idea Generator
+            </button>
+            <button class="studio-tab" id="tabBreakdown">
+              <i data-lucide="layers" class="icon-xs"></i>
+              Content Breakdown
+            </button>
+          </div>
+
+          <div class="studio-layout">
+            <!-- Idea Generator Panel -->
+            <div class="studio-panel active" id="panelIdeas">
+              <div class="studio-inputs">
+                <div class="form-row-2">
+                  <div class="field-group">
+                    <label class="field-label" for="ideaNiche">Your Niche</label>
+                    <input id="ideaNiche" class="field-input" placeholder="e.g. Personal Finance, Fitness...">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="ideaPlatform">Platform</label>
+                    <select id="ideaPlatform" class="field-select">
+                      <option value="Instagram">Instagram</option>
+                      <option value="YouTube">YouTube</option>
+                      <option value="TikTok">TikTok</option>
+                      <option value="LinkedIn">LinkedIn</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="ideaAudience">Target Audience</label>
+                  <input id="ideaAudience" class="field-input" placeholder="e.g. Aspiring entrepreneurs, 20-30s...">
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="ideaCount">Number of Ideas</label>
+                  <select id="ideaCount" class="field-select">
+                    <option value="5">5 ideas</option>
+                    <option value="10" selected>10 ideas</option>
+                    <option value="15">15 ideas</option>
+                    <option value="20">20 ideas</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary btn-full" id="generateIdeasBtn">
+                  <i data-lucide="lightbulb" class="icon-sm"></i>
+                  Generate Ideas
+                </button>
+              </div>
+              <div class="studio-output" id="ideasOutput">
+                <div class="output-empty" id="ideasEmpty">
+                  <i data-lucide="lightbulb" class="empty-icon"></i>
+                  <h4>Ideas will appear here</h4>
+                  <p>Enter your niche and platform to unlock a burst of content ideas.</p>
+                </div>
+                <div class="hidden" id="ideasResult">
+                  <div id="ideasGrid" class="ideas-grid"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content Breakdown Panel -->
+            <div class="studio-panel" id="panelBreakdown">
+              <div class="studio-inputs">
+                <div class="field-group">
+                  <label class="field-label" for="breakdownPlatform">Platform</label>
+                  <select id="breakdownPlatform" class="field-select">
+                    <option value="Instagram">Instagram</option>
+                    <option value="YouTube">YouTube</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="general">General</option>
+                  </select>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="breakdownContent">Post / Script / Caption</label>
+                  <textarea id="breakdownContent" class="field-textarea" placeholder="Paste a viral post, caption, or script here to decode its success formula..."></textarea>
+                </div>
+                <button class="btn btn-primary btn-full" id="breakdownBtn">
+                  <i data-lucide="layers" class="icon-sm"></i>
+                  Break It Down
+                </button>
+              </div>
+              <div class="studio-output" id="breakdownOutput">
+                <div class="output-empty" id="breakdownEmpty">
+                  <i data-lucide="layers" class="empty-icon"></i>
+                  <h4>Breakdown will appear here</h4>
+                  <p>Paste any viral content to decode what made it work.</p>
+                </div>
+                <div class="hidden" id="breakdownResult">
+                  <div class="output-card">
+                    <div class="output-card-header">
+                      <span class="output-title">Content DNA Breakdown</span>
+                      <button class="btn btn-sm btn-ghost" id="copyBreakdownBtn">
+                        <i data-lucide="copy" class="icon-xs"></i> Copy
+                      </button>
+                    </div>
+                    <div id="breakdownContent2" class="strategy-body"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════ PANE: COACH ══════ -->
+        <section class="pane" id="pane-coach">
+          <div class="pane-header">
+            <h2>Coach Maverick</h2>
+            <p>Your AI strategy coach. Ask about hooks, retention, virality, or post structure.</p>
+          </div>
+
+          <div class="coach-layout">
+            <div class="chat-shell">
+
+              <div class="chat-messages" id="coachChatMessages">
+                <!-- Messages injected by JS -->
+              </div>
+
+              <!-- Suggested prompts -->
+              <div class="chat-suggestions" id="chatSuggestions">
+                <button class="suggestion-chip" onclick="askCoachPreset('Review my visual analysis and suggest a script flow')">
+                  <i data-lucide="eye" class="icon-xs"></i>
+                  Review analysis
+                </button>
+                <button class="suggestion-chip" onclick="askCoachPreset('Give me 5 alternative hook ideas based on my workspace brief')">
+                  <i data-lucide="lightbulb" class="icon-xs"></i>
+                  Hook ideas
+                </button>
+                <button class="suggestion-chip" onclick="askCoachPreset('How do I maximize retention for short-form content?')">
+                  <i data-lucide="trending-up" class="icon-xs"></i>
+                  Maximize retention
+                </button>
+                <button class="suggestion-chip" onclick="askCoachPreset('What makes a viral post in 2025?')">
+                  <i data-lucide="zap" class="icon-xs"></i>
+                  Viral formula
+                </button>
+              </div>
+
+              <!-- Input -->
+              <div class="chat-input-wrap">
+                <input type="text" id="coachChatInput" class="chat-input" placeholder="Ask Maverick anything about your content strategy...">
+                <button class="chat-send-btn" id="sendCoachMsgBtn">
+                  <i data-lucide="send" class="icon-sm"></i>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ─── AI PROCESSING OVERLAY ─────────────────────────────── -->
+  <div class="ai-overlay hidden" id="globalLoader">
+    <div class="ai-modal">
+      <div class="ai-modal-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="3" fill="currentColor" class="pulse-dot"/>
+          <path d="M12 1C12 1 4 5 4 12s8 11 8 11 8-4 8-11S12 1 12 1Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        </svg>
+      </div>
+      <p class="ai-modal-title">Peek AI is thinking</p>
+      <div class="ai-steps" id="aiSteps">
+        <div class="ai-step active" id="loadStep1">
+          <div class="step-bullet"></div>
+          <span>Reading Layout</span>
+        </div>
+        <div class="ai-step" id="loadStep2">
+          <div class="step-bullet"></div>
+          <span>Extracting Text</span>
+        </div>
+        <div class="ai-step" id="loadStep3">
+          <div class="step-bullet"></div>
+          <span>Evaluating Hook Score</span>
+        </div>
+        <div class="ai-step" id="loadStep4">
+          <div class="step-bullet"></div>
+          <span>Assembling Strategy Report</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── MODAL: NEW PROJECT ───────────────────────────────── -->
+  <div class="modal-overlay hidden" id="newProjectModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-head-title">
+          <i data-lucide="folder-plus" class="icon-sm"></i>
+          <h3>New Project</h3>
+        </div>
+        <button class="icon-btn" id="closeNewProjectModalBtn">
+          <i data-lucide="x" class="icon-sm"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Create a new workspace project. All analyses, scripts and coaching conversations will be saved here.</p>
+        <div class="field-group">
+          <label class="field-label" for="newProjectNameInput">Project Name</label>
+          <input type="text" id="newProjectNameInput" class="field-input" placeholder="e.g. YouTube Channel Launch">
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="cancelNewProjectBtn">Cancel</button>
+        <button class="btn btn-primary" id="submitNewProjectBtn">Create Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── MODAL: SAVED SCRIPTS ───────────────────────────────── -->
+  <div class="modal-overlay hidden" id="savedScriptsModal">
+    <div class="modal-box" style="width: 520px;">
+      <div class="modal-head">
+        <div class="modal-head-title">
+          <i data-lucide="file-text" class="icon-sm text-accent"></i>
+          <h3>Saved Scripts</h3>
+        </div>
+        <button class="icon-btn" id="closeSavedScriptsModalBtn">
+          <i data-lucide="x" class="icon-sm"></i>
+        </button>
+      </div>
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto; padding: 20px 24px;">
+        <!-- Scripts list will be dynamically rendered here -->
+        <div id="savedScriptsList" class="saved-scripts-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TOAST CONTAINER ──────────────────────────────────── -->
+  <div class="toast-stack" id="toastContainer"></div>
+
+  <!-- ════════════════════════════════════════════════════════
+       ONBOARDING WELCOME MODAL
+  ════════════════════════════════════════════════════════ -->
+  <div class="onboarding-backdrop" id="onboardingBackdrop" aria-modal="true" role="dialog" aria-labelledby="onboardingTitle">
+    <div class="onboarding-modal" id="onboardingModal">
+
+      <!-- Ambient glows inside modal -->
+      <div class="ob-glow ob-glow-blue" aria-hidden="true"></div>
+      <div class="ob-glow ob-glow-purple" aria-hidden="true"></div>
+
+      <!-- Close button -->
+      <button class="ob-close-btn" id="obCloseBtn" aria-label="Close onboarding">
+        <i data-lucide="x"></i>
+      </button>
+
+      <!-- Header -->
+      <div class="ob-header">
+        <div class="ob-badge">
+          <span class="ob-badge-sparkle">✨</span>
+          <span>Welcome to Peek AI</span>
+        </div>
+        <h1 class="ob-heading" id="onboardingTitle">The Operating System<br><span class="ob-gradient-text">for Creators</span></h1>
+        <p class="ob-desc">Peek AI is an AI-powered creator workspace that helps you analyze content, generate scripts, plan strategies, receive AI coaching, and organize projects — all from one intelligent platform.</p>
+      </div>
+
+      <!-- Feature cards row -->
+      <div class="ob-features">
+        <div class="ob-feature-card">
+          <div class="ob-feat-icon ob-feat-blue">
+            <i data-lucide="scan-eye"></i>
+          </div>
+          <strong>Analyze</strong>
+          <span>Upload screenshots &amp; thumbnails for AI insights</span>
+        </div>
+        <div class="ob-feature-card">
+          <div class="ob-feat-icon ob-feat-purple">
+            <i data-lucide="wand-sparkles"></i>
+          </div>
+          <strong>Create</strong>
+          <span>Generate scripts, captions, hooks &amp; CTAs instantly</span>
+        </div>
+        <div class="ob-feature-card">
+          <div class="ob-feat-icon ob-feat-teal">
+            <i data-lucide="calendar-range"></i>
+          </div>
+          <strong>Plan</strong>
+          <span>Build AI content strategies &amp; publishing calendars</span>
+        </div>
+        <div class="ob-feature-card">
+          <div class="ob-feat-icon ob-feat-green">
+            <i data-lucide="message-circle"></i>
+          </div>
+          <strong>Coach</strong>
+          <span>Personalized feedback to improve every post</span>
+        </div>
+        <div class="ob-feature-card">
+          <div class="ob-feat-icon ob-feat-amber">
+            <i data-lucide="folder-open"></i>
+          </div>
+          <strong>Projects</strong>
+          <span>Save &amp; manage all your work in one place</span>
+        </div>
+      </div>
+
+      <!-- Quick start guide -->
+      <div class="ob-quickstart">
+        <div class="ob-qs-header">
+          <i data-lucide="rocket" class="ob-qs-rocket"></i>
+          <strong>Explore Peek AI in under 2 minutes</strong>
+        </div>
+        <ol class="ob-qs-steps">
+          <li><span class="ob-qs-num">1</span><span>Analyze a screenshot</span></li>
+          <li><span class="ob-qs-num">2</span><span>Generate a script</span></li>
+          <li><span class="ob-qs-num">3</span><span>Build a content plan</span></li>
+          <li><span class="ob-qs-num">4</span><span>Try AI Coach</span></li>
+        </ol>
+      </div>
+
+      <!-- Actions -->
+      <div class="ob-actions">
+        <button class="ob-btn-primary" id="obLaunchBtn">
+          <span class="ob-btn-inner">
+            <i data-lucide="rocket" class="ob-launch-icon"></i>
+            <span class="ob-btn-label">Launch Workspace</span>
+            <span class="ob-btn-loader" aria-hidden="true"></span>
+          </span>
+        </button>
+      </div>
+
+      <!-- Don't show again -->
+      <div class="ob-checkbox-row">
+        <label class="ob-checkbox-label" for="obDontShow">
+          <input type="checkbox" id="obDontShow" class="ob-checkbox">
+          <span class="ob-checkbox-custom"></span>
+          <span>Don't show this again</span>
+        </label>
+      </div>
+
+      <!-- Footer -->
+      <div class="ob-footer">
+        <span>Powered by</span>
+        <span class="ob-footer-pills">
+          <span class="ob-pill">Groq</span>
+          <span class="ob-pill-sep">•</span>
+          <span class="ob-pill">Llama 3.3 70B</span>
+          <span class="ob-pill-sep">•</span>
+          <span class="ob-pill">FastAPI</span>
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
